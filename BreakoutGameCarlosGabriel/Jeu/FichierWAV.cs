@@ -8,5 +8,11 @@ namespace BreakoutGameCarlosGabriel
 {
     internal class FichierWAV
     {
+        string nomFichier;
+        int nbrCanaux;
+        int frequence;
+        int nbrBits;
+        int qteDonnesSonores;
+        byte[] donnesSonores;
     }
 }

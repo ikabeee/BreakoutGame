@@ -46,8 +46,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Balle.cs" />
+    <Compile Include="BassePourObjets.cs" />
+    <Compile Include="Brique.cs" />
+    <Compile Include="FichierWAV.cs" />
+    <Compile Include="GestionAudio.cs" />
+    <Compile Include="GestionJeu.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Raquette.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

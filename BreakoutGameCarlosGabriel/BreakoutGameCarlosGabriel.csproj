@@ -46,15 +46,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Balle.cs" />
-    <Compile Include="BassePourObjets.cs" />
-    <Compile Include="Brique.cs" />
-    <Compile Include="FichierWAV.cs" />
-    <Compile Include="GestionAudio.cs" />
-    <Compile Include="GestionJeu.cs" />
+    <Compile Include="Objets\Balle.cs" />
+    <Compile Include="Jeu\BassePourObjets.cs" />
+    <Compile Include="Objets\Brique.cs" />
+    <Compile Include="Jeu\FichierWAV.cs" />
+    <Compile Include="Jeu\GestionAudio.cs" />
+    <Compile Include="Jeu\GestionJeu.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Raquette.cs" />
+    <Compile Include="Objets\Raquette.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

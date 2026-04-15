@@ -16,8 +16,10 @@ namespace BreakoutGameCarlosGabriel
         {
             // Générer les briques pour le tableau 1
         }
-        public void genererBriquesTableau2() 
+        public void genererBriquesTableau2()
         {
             // Générer les briques pour le tableau 2
         }
+    }
 }
+     

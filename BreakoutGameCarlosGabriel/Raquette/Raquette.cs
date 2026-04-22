@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace BreakoutGameCarlosGabriel
 {
-    abstract class Raquette
+    abstract class Raquette : BasePourObjets
     {
+        public override void MettreAJour()
+        {
+            // TODO : Lire le clavier et deplacer la raquette.
+        }
 
+        public override void Dessiner()
+        {
+            // TODO : Dessiner la raquette.
+        }
     }
 }

@@ -1,33 +1,18 @@
 ﻿using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace BreakoutGameCarlosGabriel
 {
-    public class FichierWAV
+    internal class FichierWAV
     {
-        private string nomFichier;
-        private int nbrCanaux;
-        private int frequence;
-        private int nbrBits;
-        private int qteDonneesSonores;
-        private byte[] donneesSonores;
-
-        public FichierWAV(string nomFichier)
-        {
-            this.nomFichier = nomFichier;
-            // TODO : Appeler ChargerFichier avec un flux (Stream)
-        }
-
-        private void ChargerFichier(Stream stream)
-        {
-            // TODO : Implémenter la lecture du fichier WAV
-        }
-
-        public byte[] GetDonneesSonores() { return donneesSonores; }
-        public int GetQteDonneesSonores() { return qteDonneesSonores; }
-        public int GetFrequence() { return frequence; }
-
-        // Note: Le type ALFormat dépend de la librairie audio que vous utilisez (comme OpenTK)
-        // public ALFormat GetFormatSonAL() { ... }
+        string nomFichier;
+        int nbrCanaux;
+        int frequence;
+        int nbrBits;
+        int qteDonnesSonores;
+        byte[] donnesSonores;
     }
 }

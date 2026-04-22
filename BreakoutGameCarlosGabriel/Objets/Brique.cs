@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BreakoutGameCarlosGabriel
 {
-    internal class GestionAudio
+    internal class Brique
     {
     }
 }

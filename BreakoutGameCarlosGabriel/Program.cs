@@ -4,11 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using OpenTK;
 using System.Threading.Tasks;
 
 namespace BreakoutGameCarlosGabriel
 {
-    internal class Program
+    class Program
     {
         static void Main(string[] args)
         {

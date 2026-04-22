@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace BreakoutGameCarlosGabriel
 {
-    internal class Raquette
+    abstract class Raquette
     {
+
     }
 }

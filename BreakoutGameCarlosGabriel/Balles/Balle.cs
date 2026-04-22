@@ -2,7 +2,7 @@
 
 namespace BreakoutGameCarlosGabriel
 {
-    public class Balle : BasePourObjets
+    abstract class Balle : BasePourObjets
     {
         private float vitesseX;
         private float vitesseY;

@@ -12,8 +12,8 @@ namespace BreakoutGameCarlosGabriel
     {
         static void Main(string[] args)
         {
-            int largeurFenetre = 600;
-            int hauteurFenetre = 300;
+            int largeurFenetre = 1920;
+            int hauteurFenetre = 1080;
             string titreFenetre = "Breakout Game - Carlos Gabriel";
 
             DisplayDevice moniteur = DisplayDevice.Default;

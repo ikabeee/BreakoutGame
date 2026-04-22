@@ -2,7 +2,7 @@
 
 namespace BreakoutGameCarlosGabriel
 {
-    public class Brique : BasePourObjets
+    abstract class Brique : BasePourObjets
     {
         // Attributs spécifiques
         private int pointsDeVie;

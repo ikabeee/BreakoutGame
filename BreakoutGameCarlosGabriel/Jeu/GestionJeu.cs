@@ -343,9 +343,9 @@ namespace BreakoutGameCarlosGabriel
                 gestionAudio.JouerSonRebond();
             }
 
-            if (balleJeu.Haut <= 0.0f)
+            if (balleJeu.Haut <= GestionUI.HauteurHud)
             {
-                balleJeu.DefinirPositionY(0.0f);
+                balleJeu.DefinirPositionY(GestionUI.HauteurHud);
                 balleJeu.InverserVitesseY();
                 gestionAudio.JouerSonRebond();
             }

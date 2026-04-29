@@ -15,6 +15,8 @@ namespace BreakoutGameCarlosGabriel
     public class GestionUI
     {
         #region Attributs
+        public const float HauteurHud = 42.0f;
+
         private readonly float largeurFenetre;
         private readonly float hauteurFenetre;
         private readonly Font policeHud;
@@ -56,7 +58,7 @@ namespace BreakoutGameCarlosGabriel
         #region Affichage
         private void DessinerHUD(int score, int balles, int tableau)
         {
-            dessinerRectangle(0.0f, 0.0f, largeurFenetre, 42.0f, 0.02f, 0.02f, 0.03f, 0.82f);
+            dessinerRectangle(0.0f, 0.0f, largeurFenetre, HauteurHud, 0.02f, 0.02f, 0.03f, 0.82f);
             dessinerTexte("Score : " + score, 24.0f, 10.0f, policeHud, Color.White);
             dessinerTexte("Balles : " + balles, 210.0f, 10.0f, policeHud, Color.White);
             dessinerTexte("Tableau : " + tableau, 400.0f, 10.0f, policeHud, Color.White);

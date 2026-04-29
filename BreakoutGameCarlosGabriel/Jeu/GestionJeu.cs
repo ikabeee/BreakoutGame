@@ -19,6 +19,7 @@ namespace BreakoutGameCarlosGabriel
         private readonly GameWindow window;
         private List<Brique> listeBriquesCassables;
         private List<Brique> listeBriquesIndestructibles;
+        private List<EffetDestructionBrique> effetsDestructionBriques;
         private int nombreBriquesCassablesInitiales;
 
         private Raquette raquetteJoueur;
@@ -76,6 +77,7 @@ namespace BreakoutGameCarlosGabriel
 
             listeBriquesCassables = new List<Brique>();
             listeBriquesIndestructibles = new List<Brique>();
+            effetsDestructionBriques = new List<EffetDestructionBrique>();
             gestionAudio = new AudioPrincipal();
             gestionUI = new GestionUI(LargeurJeu, HauteurJeu);
 
@@ -298,6 +300,7 @@ namespace BreakoutGameCarlosGabriel
             Score = 0;
             TableauActuel = 1;
             EtatDuJeu = EtatJeu.Accueil;
+            effetsDestructionBriques.Clear();
 
             initialiserObjetsJoueur();
             genererTableauActuel();
@@ -408,6 +411,7 @@ namespace BreakoutGameCarlosGabriel
 
             if (brique.EstDetruite)
             {
+                effetsDestructionBriques.Add(new EffetDestructionBrique(brique));
                 listeBriquesCassables.RemoveAt(collision.Index);
                 gestionAudio.JouerSonDestruction();
             }
@@ -714,6 +718,7 @@ namespace BreakoutGameCarlosGabriel
         #region GestionAffichage
         private void update(object sender, FrameEventArgs e)
         {
+            mettreAJourEffetsDestruction((float)e.Time);
             MettreAJourLeJeu();
         }
 
@@ -742,8 +747,30 @@ namespace BreakoutGameCarlosGabriel
                 listeBriquesIndestructibles[i].Dessiner();
             }
 
+            dessinerEffetsDestruction();
             raquetteJoueur?.Dessiner();
             balleJeu?.Dessiner();
+        }
+
+        private void mettreAJourEffetsDestruction(float deltaTime)
+        {
+            for (int i = effetsDestructionBriques.Count - 1; i >= 0; i--)
+            {
+                effetsDestructionBriques[i].MettreAJour(deltaTime);
+
+                if (effetsDestructionBriques[i].EstTermine)
+                {
+                    effetsDestructionBriques.RemoveAt(i);
+                }
+            }
+        }
+
+        private void dessinerEffetsDestruction()
+        {
+            for (int i = 0; i < effetsDestructionBriques.Count; i++)
+            {
+                effetsDestructionBriques[i].Dessiner();
+            }
         }
 
         private void afficherMenuConsole()

@@ -52,6 +52,7 @@
     <Compile Include="Briques\Brique.cs" />
     <Compile Include="Jeu\FichierWAV.cs" />
     <Compile Include="Jeu\AudioPrincipal.cs" />
+    <Compile Include="Jeu\EffetDestructionBrique.cs" />
     <Compile Include="Jeu\GestionJeu.cs" />
     <Compile Include="Jeu\GestionUI.cs" />
     <Compile Include="Program.cs" />

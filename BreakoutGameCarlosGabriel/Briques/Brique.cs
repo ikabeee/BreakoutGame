@@ -161,6 +161,41 @@ namespace BreakoutGameCarlosGabriel
             return Math.Max(1, Math.Min(PointsDeVieMaximum, pointsDeVie));
         }
 
+        private Vector3 obtenirCouleurPrincipale()
+        {
+            if (!EstDestructible)
+            {
+                return new Vector3(0.35f, 0.37f, 0.40f);
+            }
+
+            if (EstDynamique && pointsDeVie <= 1)
+            {
+                return new Vector3(0.18f, 0.62f, 0.72f);
+            }
+
+            if (EstDynamique && pointsDeVie == 2)
+            {
+                return new Vector3(0.83f, 0.61f, 0.12f);
+            }
+
+            if (EstDynamique)
+            {
+                return new Vector3(0.92f, 0.36f, 0.16f);
+            }
+
+            if (pointsDeVie <= 1)
+            {
+                return new Vector3(0.20f, 0.68f, 0.89f);
+            }
+
+            if (pointsDeVie == 2)
+            {
+                return new Vector3(0.58f, 0.36f, 0.74f);
+            }
+
+            return new Vector3(0.87f, 0.18f, 0.18f);
+        }
+
         private void mettreAJourTextureSelonEtat()
         {
             if (!EstDestructible)
@@ -184,34 +219,8 @@ namespace BreakoutGameCarlosGabriel
 
         private void dessinerFond()
         {
-            if (!EstDestructible)
-            {
-                GL.Color3(0.35f, 0.37f, 0.40f);
-            }
-            else if (EstDynamique && pointsDeVie == 1)
-            {
-                GL.Color3(0.18f, 0.62f, 0.72f);
-            }
-            else if (EstDynamique && pointsDeVie == 2)
-            {
-                GL.Color3(0.83f, 0.61f, 0.12f);
-            }
-            else if (EstDynamique)
-            {
-                GL.Color3(0.92f, 0.36f, 0.16f);
-            }
-            else if (pointsDeVie == 1)
-            {
-                GL.Color3(0.20f, 0.68f, 0.89f);
-            }
-            else if (pointsDeVie == 2)
-            {
-                GL.Color3(0.58f, 0.36f, 0.74f);
-            }
-            else
-            {
-                GL.Color3(0.87f, 0.18f, 0.18f);
-            }
+            Vector3 couleurPrincipale = obtenirCouleurPrincipale();
+            GL.Color3(couleurPrincipale);
 
             GL.Begin(PrimitiveType.Quads);
             GL.Vertex2(listePoints[0]);
@@ -278,6 +287,7 @@ namespace BreakoutGameCarlosGabriel
         public float Droite { get => positionX + largeur; }
         public float Haut { get => positionY; }
         public float Bas { get => positionY + hauteur; }
+        public Vector3 CouleurEffet { get => obtenirCouleurPrincipale(); }
         public int DernierPalierProgressionStrategie { get; set; }
         #endregion
     }

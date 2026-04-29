@@ -26,6 +26,7 @@ namespace BreakoutGameCarlosGabriel
             this.largeur = largeur;
             this.hauteur = hauteur;
             this.raquette = raquette;
+            AssignerTexture("balle.png");
             Reinitialiser(raquette);
         }
         #endregion
@@ -102,6 +103,12 @@ namespace BreakoutGameCarlosGabriel
 
         public override void Dessiner()
         {
+            if (UtiliseTexture)
+            {
+                base.Dessiner();
+                return;
+            }
+
             float centreX = positionX + largeur / 2.0f;
             float centreY = positionY + hauteur / 2.0f;
             float rayon = largeur / 2.0f;

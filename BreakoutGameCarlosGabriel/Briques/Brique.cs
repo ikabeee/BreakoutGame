@@ -104,6 +104,7 @@ namespace BreakoutGameCarlosGabriel
             this.hauteur = hauteur;
             this.pointsDeVie = pointsDeVie;
             this.typeBrique = typeBrique;
+            AssignerTexture(typeBrique == TypeBrique.Indestructible ? "brique-indestructible.png" : "brique-destructible.png");
 
             if (typeBrique == TypeBrique.Dynamique)
             {
@@ -166,6 +167,26 @@ namespace BreakoutGameCarlosGabriel
                 return;
             }
 
+            if (UtiliseTexture)
+            {
+                base.Dessiner();
+                GL.Disable(EnableCap.Texture2D);
+                dessinerBordure();
+
+                if (EstDynamique)
+                {
+                    dessinerTextureDynamique();
+                }
+
+                if (EstDestructible)
+                {
+                    dessinerPointsDeVie();
+                }
+
+                GL.Enable(EnableCap.Texture2D);
+                return;
+            }
+
             GL.Disable(EnableCap.Texture2D);
             dessinerFond();
             dessinerBordure();
@@ -173,6 +194,11 @@ namespace BreakoutGameCarlosGabriel
             if (EstDynamique)
             {
                 dessinerTextureDynamique();
+            }
+
+            if (EstDestructible)
+            {
+                dessinerPointsDeVie();
             }
 
             GL.Enable(EnableCap.Texture2D);
@@ -240,6 +266,74 @@ namespace BreakoutGameCarlosGabriel
                 GL.Vertex2(x + hauteur, positionY);
             }
             GL.End();
+        }
+
+        private void dessinerPointsDeVie()
+        {
+            int pointsAffiches = Math.Max(0, Math.Min(pointsDeVie, PointsDeVieMaximum));
+            if (pointsAffiches == 0)
+            {
+                return;
+            }
+
+            int nombreLignes = (pointsAffiches + 4) / 5;
+            float taillePoint = Math.Max(4.0f, Math.Min(6.0f, largeur / 14.0f));
+            float espacement = 2.0f;
+            float hauteurTotale = nombreLignes * taillePoint + (nombreLignes - 1) * espacement;
+            float yDepart = positionY + hauteur / 2.0f - hauteurTotale / 2.0f;
+
+            float largeurFond = 5 * taillePoint + 4 * espacement + 8.0f;
+            float hauteurFond = hauteurTotale + 6.0f;
+            float xFond = positionX + largeur / 2.0f - largeurFond / 2.0f;
+            float yFond = positionY + hauteur / 2.0f - hauteurFond / 2.0f;
+
+            GL.Color4(0.03f, 0.05f, 0.08f, 0.45f);
+            GL.Begin(PrimitiveType.Quads);
+            GL.Vertex2(xFond, yFond);
+            GL.Vertex2(xFond + largeurFond, yFond);
+            GL.Vertex2(xFond + largeurFond, yFond + hauteurFond);
+            GL.Vertex2(xFond, yFond + hauteurFond);
+            GL.End();
+
+            int pointsDessines = 0;
+            for (int ligne = 0; ligne < nombreLignes; ligne++)
+            {
+                int pointsCetteLigne = Math.Min(5, pointsAffiches - pointsDessines);
+                float largeurLigne = pointsCetteLigne * taillePoint + (pointsCetteLigne - 1) * espacement;
+                float xDepart = positionX + largeur / 2.0f - largeurLigne / 2.0f;
+                float yLigne = yDepart + ligne * (taillePoint + espacement);
+
+                for (int colonne = 0; colonne < pointsCetteLigne; colonne++)
+                {
+                    float xPoint = xDepart + colonne * (taillePoint + espacement);
+
+                    if (EstDynamique)
+                    {
+                        GL.Color3(0.98f, 0.83f, 0.18f);
+                    }
+                    else
+                    {
+                        GL.Color3(0.95f, 0.98f, 1.0f);
+                    }
+
+                    GL.Begin(PrimitiveType.Quads);
+                    GL.Vertex2(xPoint, yLigne);
+                    GL.Vertex2(xPoint + taillePoint, yLigne);
+                    GL.Vertex2(xPoint + taillePoint, yLigne + taillePoint);
+                    GL.Vertex2(xPoint, yLigne + taillePoint);
+                    GL.End();
+
+                    GL.Color3(0.07f, 0.1f, 0.15f);
+                    GL.Begin(PrimitiveType.LineLoop);
+                    GL.Vertex2(xPoint, yLigne);
+                    GL.Vertex2(xPoint + taillePoint, yLigne);
+                    GL.Vertex2(xPoint + taillePoint, yLigne + taillePoint);
+                    GL.Vertex2(xPoint, yLigne + taillePoint);
+                    GL.End();
+                }
+
+                pointsDessines += pointsCetteLigne;
+            }
         }
         #endregion
 

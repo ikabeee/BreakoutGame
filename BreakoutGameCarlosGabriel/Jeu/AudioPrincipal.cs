@@ -33,9 +33,9 @@ namespace BreakoutGameCarlosGabriel
 
         private void init()
         {
-            bufferRebond = chargerBuffer("../../audio/rebond.wav");
-            bufferDestruction = chargerBuffer("../../audio/destruction.wav");
-            bufferPerteBalle = chargerBuffer("../../audio/perteBalle.wav");
+            bufferRebond = chargerBuffer("rebond.wav");
+            bufferDestruction = chargerBuffer("destruction.wav");
+            bufferPerteBalle = chargerBuffer("perteBalle.wav");
 
             sourceRebond = creerSource(bufferRebond);
             sourceDestruction = creerSource(bufferDestruction);
@@ -46,10 +46,12 @@ namespace BreakoutGameCarlosGabriel
         #endregion
 
         #region ChargementAudio
-        private int chargerBuffer(string cheminFichier)
+        private int chargerBuffer(string nomFichier)
         {
+            string cheminFichier = resoudreCheminAudio(nomFichier);
             if (!File.Exists(cheminFichier))
             {
+                Console.WriteLine("Audio introuvable : " + nomFichier);
                 return 0;
             }
 
@@ -63,6 +65,28 @@ namespace BreakoutGameCarlosGabriel
                 fichierAudio.GetFrequence());
 
             return buffer;
+        }
+
+        private string resoudreCheminAudio(string nomFichier)
+        {
+            string[] cheminsPossibles =
+            {
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "audio", nomFichier),
+                Path.Combine(Environment.CurrentDirectory, "audio", nomFichier),
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\audio", nomFichier),
+                Path.Combine(Environment.CurrentDirectory, @"..\..\audio", nomFichier)
+            };
+
+            for (int i = 0; i < cheminsPossibles.Length; i++)
+            {
+                string cheminComplet = Path.GetFullPath(cheminsPossibles[i]);
+                if (File.Exists(cheminComplet))
+                {
+                    return cheminComplet;
+                }
+            }
+
+            return Path.GetFullPath(cheminsPossibles[0]);
         }
 
         private int creerSource(int buffer)

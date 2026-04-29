@@ -113,7 +113,7 @@ namespace BreakoutGameCarlosGabriel
             balleJeu = new Balle(18.0f, 18.0f, raquetteJoueur);
         }
 
-        private void genererTableauActuel()
+        private void genererTableauActuel() 
         {
             int tableau = ((TableauActuel - 1) % NombreTableaux) + 1;
 

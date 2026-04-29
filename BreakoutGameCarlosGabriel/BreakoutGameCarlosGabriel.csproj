@@ -64,6 +64,23 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="assets\balle" />
+    <Content Include="assets\brique-indestructible.png" />
+    <Content Include="assets\brique-destructible-nvie-1.png" />
+    <Content Include="assets\brique-destructible-nvie-2.png" />
+    <Content Include="assets\brique-destructible-nvie-3.png" />
+    <Content Include="assets\raquette.png" />
+    <Content Include="audio\destruction.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="audio\perteBalle.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="audio\rebond.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="bin\Debug\" />
     <Folder Include="bin\Release\" />
   </ItemGroup>

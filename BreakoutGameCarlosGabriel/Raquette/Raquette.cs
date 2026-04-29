@@ -21,6 +21,7 @@ namespace BreakoutGameCarlosGabriel
             largeur = 120.0f;
             hauteur = 18.0f;
             positionYInitiale = hauteurFenetre - 48.0f;
+            AssignerTexture("raquette.png");
             Reinitialiser();
         }
         #endregion
@@ -64,6 +65,12 @@ namespace BreakoutGameCarlosGabriel
 
         public override void Dessiner()
         {
+            if (UtiliseTexture)
+            {
+                base.Dessiner();
+                return;
+            }
+
             GL.Disable(EnableCap.Texture2D);
 
             GL.Color3(0.1f, 0.45f, 0.95f);

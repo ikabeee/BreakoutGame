@@ -13,9 +13,8 @@ namespace BreakoutGameCarlosGabriel
 
     class ContexteStrategieBrique
     {
-        public int TableauActuel { get; set; }
-        public int BriquesRestantes { get; set; }
-        public int NombreRebondsBalle { get; set; }
+        public int BriquesDetruites { get; set; }
+        public int TotalBriquesCassables { get; set; }
     }
 
     interface IStrategieBriqueDynamique
@@ -23,71 +22,47 @@ namespace BreakoutGameCarlosGabriel
         void Appliquer(Brique brique, ContexteStrategieBrique contexte);
     }
 
-    class StrategieSelonTableau : IStrategieBriqueDynamique
+    class StrategieSelonProgressionNiveau : IStrategieBriqueDynamique
     {
+        private const float SeuilNiveau2 = 0.35f;
+        private const float SeuilNiveau3 = 0.70f;
+
         public void Appliquer(Brique brique, ContexteStrategieBrique contexte)
         {
-            if (brique.DernierTableauStrategie != contexte.TableauActuel)
+            if (contexte.TotalBriquesCassables <= 0 || brique.EstDetruite)
             {
-                brique.AugmenterPointsDeVie(Math.Max(0, contexte.TableauActuel - 1));
-                brique.DernierTableauStrategie = contexte.TableauActuel;
+                return;
             }
-        }
-    }
 
-    class StrategieSelonBriquesRestantes : IStrategieBriqueDynamique
-    {
-        public void Appliquer(Brique brique, ContexteStrategieBrique contexte)
-        {
-            if (contexte.BriquesRestantes <= 5 && brique.DernierSeuilRestantStrategie != contexte.TableauActuel)
+            float progression = (float)contexte.BriquesDetruites / contexte.TotalBriquesCassables;
+            int palierProgression = 1;
+
+            if (progression >= SeuilNiveau3)
             {
-                brique.AugmenterPointsDeVie(1);
-                brique.DernierSeuilRestantStrategie = contexte.TableauActuel;
+                palierProgression = 3;
             }
-        }
-    }
-
-    class StrategieSelonRebondsBalle : IStrategieBriqueDynamique
-    {
-        public void Appliquer(Brique brique, ContexteStrategieBrique contexte)
-        {
-            int intervalleRebonds = contexte.NombreRebondsBalle / 8;
-            if (intervalleRebonds > brique.DernierIntervalleRebondsStrategie)
+            else if (progression >= SeuilNiveau2)
             {
-                brique.AugmenterPointsDeVie(1);
-                brique.DernierIntervalleRebondsStrategie = intervalleRebonds;
+                palierProgression = 2;
             }
-        }
-    }
 
-    class StrategieComposeeBrique : IStrategieBriqueDynamique
-    {
-        #region Attributs
-        private readonly IStrategieBriqueDynamique[] strategies;
-        #endregion
-
-        #region ConstructeursInitialisation
-        public StrategieComposeeBrique(params IStrategieBriqueDynamique[] strategies)
-        {
-            this.strategies = strategies;
-        }
-        #endregion
-
-        #region MethodesPubliques
-        public void Appliquer(Brique brique, ContexteStrategieBrique contexte)
-        {
-            for (int i = 0; i < strategies.Length; i++)
+            if (palierProgression <= brique.DernierPalierProgressionStrategie)
             {
-                strategies[i].Appliquer(brique, contexte);
+                return;
             }
+
+            brique.AugmenterPointsDeVie(palierProgression - brique.DernierPalierProgressionStrategie);
+            brique.DernierPalierProgressionStrategie = palierProgression;
         }
-        #endregion
     }
 
     class Brique : BasePourObjets
     {
         #region Attributs
-        private const int PointsDeVieMaximum = 9;
+        private const int PointsDeVieMaximum = 3;
+        private const string AssetBriqueIndestructible = "brique-indestructible.png";
+        private const string PrefixeAssetBriqueNormale = "brique-destructible-nvie-";
+        private const string PrefixeAssetBriqueDynamique = "brique-dynamique-nvie-";
 
         private readonly TypeBrique typeBrique;
         private readonly IStrategieBriqueDynamique strategie;
@@ -102,18 +77,12 @@ namespace BreakoutGameCarlosGabriel
             positionY = y;
             this.largeur = largeur;
             this.hauteur = hauteur;
-            this.pointsDeVie = pointsDeVie;
             this.typeBrique = typeBrique;
-            AssignerTexture(typeBrique == TypeBrique.Indestructible ? "brique-indestructible.png" : "brique-destructible.png");
+            this.pointsDeVie = typeBrique == TypeBrique.Indestructible ? 1 : normaliserPointsDeVie(pointsDeVie);
+            strategie = typeBrique == TypeBrique.Dynamique ? new StrategieSelonProgressionNiveau() : null;
+            DernierPalierProgressionStrategie = EstDynamique ? this.pointsDeVie : 0;
 
-            if (typeBrique == TypeBrique.Dynamique)
-            {
-                strategie = new StrategieComposeeBrique(
-                    new StrategieSelonTableau(),
-                    new StrategieSelonBriquesRestantes(),
-                    new StrategieSelonRebondsBalle());
-            }
-
+            mettreAJourTextureSelonEtat();
             mettreAJourListePoints();
         }
         #endregion
@@ -121,7 +90,7 @@ namespace BreakoutGameCarlosGabriel
         #region MethodesPubliques
         public void RecevoirDegat()
         {
-            if (!EstDestructible)
+            if (!EstDestructible || estDetruite)
             {
                 return;
             }
@@ -130,7 +99,10 @@ namespace BreakoutGameCarlosGabriel
             if (pointsDeVie <= 0)
             {
                 estDetruite = true;
+                return;
             }
+
+            mettreAJourTextureSelonEtat();
         }
 
         public void AugmenterPointsDeVie(int quantite)
@@ -140,11 +112,8 @@ namespace BreakoutGameCarlosGabriel
                 return;
             }
 
-            pointsDeVie += quantite;
-            if (pointsDeVie > PointsDeVieMaximum)
-            {
-                pointsDeVie = PointsDeVieMaximum;
-            }
+            pointsDeVie = Math.Min(PointsDeVieMaximum, pointsDeVie + quantite);
+            mettreAJourTextureSelonEtat();
         }
 
         public void AppliquerStrategie(ContexteStrategieBrique contexte)
@@ -170,31 +139,12 @@ namespace BreakoutGameCarlosGabriel
             if (UtiliseTexture)
             {
                 base.Dessiner();
-                GL.Disable(EnableCap.Texture2D);
-                dessinerBordure();
-
-                if (EstDynamique)
-                {
-                    dessinerTextureDynamique();
-                }
-
-                if (EstDestructible)
-                {
-                    dessinerPointsDeVie();
-                }
-
-                GL.Enable(EnableCap.Texture2D);
                 return;
             }
 
             GL.Disable(EnableCap.Texture2D);
             dessinerFond();
             dessinerBordure();
-
-            if (EstDynamique)
-            {
-                dessinerTextureDynamique();
-            }
 
             if (EstDestructible)
             {
@@ -206,6 +156,24 @@ namespace BreakoutGameCarlosGabriel
         #endregion
 
         #region MethodesPrivees
+        private static int normaliserPointsDeVie(int pointsDeVie)
+        {
+            return Math.Max(1, Math.Min(PointsDeVieMaximum, pointsDeVie));
+        }
+
+        private void mettreAJourTextureSelonEtat()
+        {
+            if (!EstDestructible)
+            {
+                AssignerTexture(AssetBriqueIndestructible);
+                return;
+            }
+
+            int niveauTexture = normaliserPointsDeVie(pointsDeVie);
+            string prefixe = EstDynamique ? PrefixeAssetBriqueDynamique : PrefixeAssetBriqueNormale;
+            AssignerTexture(prefixe + niveauTexture + ".png");
+        }
+
         private void mettreAJourListePoints()
         {
             listePoints[0] = new Vector2(positionX, positionY);
@@ -220,17 +188,25 @@ namespace BreakoutGameCarlosGabriel
             {
                 GL.Color3(0.35f, 0.37f, 0.40f);
             }
+            else if (EstDynamique && pointsDeVie == 1)
+            {
+                GL.Color3(0.18f, 0.62f, 0.72f);
+            }
+            else if (EstDynamique && pointsDeVie == 2)
+            {
+                GL.Color3(0.83f, 0.61f, 0.12f);
+            }
             else if (EstDynamique)
             {
-                GL.Color3(0.65f, 0.18f, 0.86f);
+                GL.Color3(0.92f, 0.36f, 0.16f);
             }
             else if (pointsDeVie == 1)
             {
-                GL.Color3(0.10f, 0.68f, 0.42f);
+                GL.Color3(0.20f, 0.68f, 0.89f);
             }
             else if (pointsDeVie == 2)
             {
-                GL.Color3(0.93f, 0.66f, 0.16f);
+                GL.Color3(0.58f, 0.36f, 0.74f);
             }
             else
             {
@@ -256,18 +232,6 @@ namespace BreakoutGameCarlosGabriel
             GL.End();
         }
 
-        private void dessinerTextureDynamique()
-        {
-            GL.Color3(0.95f, 0.88f, 0.18f);
-            GL.Begin(PrimitiveType.Lines);
-            for (float x = positionX - hauteur; x < positionX + largeur; x += 12.0f)
-            {
-                GL.Vertex2(x, positionY + hauteur);
-                GL.Vertex2(x + hauteur, positionY);
-            }
-            GL.End();
-        }
-
         private void dessinerPointsDeVie()
         {
             int pointsAffiches = Math.Max(0, Math.Min(pointsDeVie, PointsDeVieMaximum));
@@ -276,63 +240,31 @@ namespace BreakoutGameCarlosGabriel
                 return;
             }
 
-            int nombreLignes = (pointsAffiches + 4) / 5;
             float taillePoint = Math.Max(4.0f, Math.Min(6.0f, largeur / 14.0f));
             float espacement = 2.0f;
-            float hauteurTotale = nombreLignes * taillePoint + (nombreLignes - 1) * espacement;
-            float yDepart = positionY + hauteur / 2.0f - hauteurTotale / 2.0f;
+            float largeurTotale = pointsAffiches * taillePoint + (pointsAffiches - 1) * espacement;
+            float xDepart = positionX + largeur / 2.0f - largeurTotale / 2.0f;
+            float yDepart = positionY + hauteur / 2.0f - taillePoint / 2.0f;
 
-            float largeurFond = 5 * taillePoint + 4 * espacement + 8.0f;
-            float hauteurFond = hauteurTotale + 6.0f;
-            float xFond = positionX + largeur / 2.0f - largeurFond / 2.0f;
-            float yFond = positionY + hauteur / 2.0f - hauteurFond / 2.0f;
-
-            GL.Color4(0.03f, 0.05f, 0.08f, 0.45f);
-            GL.Begin(PrimitiveType.Quads);
-            GL.Vertex2(xFond, yFond);
-            GL.Vertex2(xFond + largeurFond, yFond);
-            GL.Vertex2(xFond + largeurFond, yFond + hauteurFond);
-            GL.Vertex2(xFond, yFond + hauteurFond);
-            GL.End();
-
-            int pointsDessines = 0;
-            for (int ligne = 0; ligne < nombreLignes; ligne++)
+            for (int i = 0; i < pointsAffiches; i++)
             {
-                int pointsCetteLigne = Math.Min(5, pointsAffiches - pointsDessines);
-                float largeurLigne = pointsCetteLigne * taillePoint + (pointsCetteLigne - 1) * espacement;
-                float xDepart = positionX + largeur / 2.0f - largeurLigne / 2.0f;
-                float yLigne = yDepart + ligne * (taillePoint + espacement);
+                float xPoint = xDepart + i * (taillePoint + espacement);
 
-                for (int colonne = 0; colonne < pointsCetteLigne; colonne++)
+                if (EstDynamique)
                 {
-                    float xPoint = xDepart + colonne * (taillePoint + espacement);
-
-                    if (EstDynamique)
-                    {
-                        GL.Color3(0.98f, 0.83f, 0.18f);
-                    }
-                    else
-                    {
-                        GL.Color3(0.95f, 0.98f, 1.0f);
-                    }
-
-                    GL.Begin(PrimitiveType.Quads);
-                    GL.Vertex2(xPoint, yLigne);
-                    GL.Vertex2(xPoint + taillePoint, yLigne);
-                    GL.Vertex2(xPoint + taillePoint, yLigne + taillePoint);
-                    GL.Vertex2(xPoint, yLigne + taillePoint);
-                    GL.End();
-
-                    GL.Color3(0.07f, 0.1f, 0.15f);
-                    GL.Begin(PrimitiveType.LineLoop);
-                    GL.Vertex2(xPoint, yLigne);
-                    GL.Vertex2(xPoint + taillePoint, yLigne);
-                    GL.Vertex2(xPoint + taillePoint, yLigne + taillePoint);
-                    GL.Vertex2(xPoint, yLigne + taillePoint);
-                    GL.End();
+                    GL.Color3(1.0f, 0.95f, 0.72f);
+                }
+                else
+                {
+                    GL.Color3(0.95f, 0.98f, 1.0f);
                 }
 
-                pointsDessines += pointsCetteLigne;
+                GL.Begin(PrimitiveType.Quads);
+                GL.Vertex2(xPoint, yDepart);
+                GL.Vertex2(xPoint + taillePoint, yDepart);
+                GL.Vertex2(xPoint + taillePoint, yDepart + taillePoint);
+                GL.Vertex2(xPoint, yDepart + taillePoint);
+                GL.End();
             }
         }
         #endregion
@@ -346,9 +278,7 @@ namespace BreakoutGameCarlosGabriel
         public float Droite { get => positionX + largeur; }
         public float Haut { get => positionY; }
         public float Bas { get => positionY + hauteur; }
-        public int DernierTableauStrategie { get; set; }
-        public int DernierSeuilRestantStrategie { get; set; }
-        public int DernierIntervalleRebondsStrategie { get; set; }
+        public int DernierPalierProgressionStrategie { get; set; }
         #endregion
     }
 }

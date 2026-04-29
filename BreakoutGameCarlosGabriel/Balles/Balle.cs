@@ -83,6 +83,25 @@ namespace BreakoutGameCarlosGabriel
             }
         }
 
+        public void DefinirPosition(float x, float y)
+        {
+            positionX = x;
+            positionY = y;
+            mettreAJourListePoints();
+        }
+
+        public void DefinirPositionX(float x)
+        {
+            positionX = x;
+            mettreAJourListePoints();
+        }
+
+        public void DefinirPositionY(float y)
+        {
+            positionY = y;
+            mettreAJourListePoints();
+        }
+
         public override void MettreAJour()
         {
             anciennePositionX = positionX;

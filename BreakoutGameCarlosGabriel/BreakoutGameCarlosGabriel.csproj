@@ -38,6 +38,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -46,20 +47,42 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Objets\Balle.cs" />
-    <Compile Include="Jeu\BassePourObjets.cs" />
-    <Compile Include="Objets\Brique.cs" />
+    <Compile Include="Balles\Balle.cs" />
+    <Compile Include="Jeu\BasePourObjets.cs" />
+    <Compile Include="Briques\Brique.cs" />
     <Compile Include="Jeu\FichierWAV.cs" />
-    <Compile Include="Jeu\GestionAudio.cs" />
+    <Compile Include="Jeu\AudioPrincipal.cs" />
+    <Compile Include="Jeu\EffetDestructionBrique.cs" />
     <Compile Include="Jeu\GestionJeu.cs" />
+    <Compile Include="Jeu\GestionUI.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Objets\Raquette.cs" />
+    <Compile Include="Raquette\Raquette.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="assets\balle.png" />
+    <Content Include="assets\brique-indestructible.png" />
+    <Content Include="assets\brique-destructible-nvie-1.png" />
+    <Content Include="assets\brique-destructible-nvie-2.png" />
+    <Content Include="assets\brique-destructible-nvie-3.png" />
+    <Content Include="assets\brique-dynamique-nvie-1.png" />
+    <Content Include="assets\brique-dynamique-nvie-2.png" />
+    <Content Include="assets\brique-dynamique-nvie-3.png" />
+    <Content Include="assets\raquette.png" />
+    <Content Include="audio\destruction.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="audio\perteBalle.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="audio\rebond.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\Debug\" />
